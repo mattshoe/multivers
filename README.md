@@ -37,7 +37,7 @@ libraries.
 
 ## Getting Started
 
-### Adding the Plugin
+### Add the Plugin
 
 Add the MultiVers plugin to your project in your `build.gradle.kts` file:
 
@@ -47,7 +47,7 @@ plugins {
 }
 ```
 
-### Configuration
+### Configure your variants
 ```kotlin
 multivers {
     runGradleTasksOnAllVariants("testDebugUnitTestCoverage", "check")
@@ -79,7 +79,20 @@ multivers {
 }
 ```
 
-### Syntax
+### Run the gradle task!
+
+There are several ways you could choose to run MultiVers validations:
+
+1. Run validations for all version variations at once. The command below will run all dependency/version combinations and their associated tasks:
+   - `./gradlew multivers`
+2. Run validations for a specific dependency. Take a look at the `"io.some.group:SomeArtifact"` dependency above:
+   - `./gradlew multiversIoSomeGroupSomeArtifact`
+   - Note that any dashes and underscores in the GAV are removed.
+3. Run validations for a specific dependency version. Imagine we want to run validations for `"io.some.group:SomeArtifact:3.8.10"`:
+   - `./gradlew multiversIoSomeGroupSomeArtifact_v3810`
+
+
+## Syntax
 
 Configure the plugin using the `multivers` block in your `build.gradle.kts` file:
 
@@ -87,10 +100,11 @@ Configure the plugin using the `multivers` block in your `build.gradle.kts` file
 multivers {
     runGradleTasksOnAllVariants("test") // runs ./gradlew test against ALL version variants defined below.
 
-    // Define the "group:artifiact" for which you want to vary dependencies
+    // Define the module whose versions you wish to vary
     dependency("com.foo.bar:DerpDerp") {
         runGradleTasks("assemble") // runs ./gradlew assemble against all com.foo.bar:DerpDerp versions
         version("2.5.3")
+        version("2.5.9")
         range("0.0.0", "2.0.0") {
             exclude(".*-RC") // exclude any versions whose pattern matches this regex
             runGradleTasks("check") // run ./gradlew check against all versions in this range
@@ -111,14 +125,14 @@ multivers {
 
 ### Public Methods
 
-#### runGradleTasksOnAllVariants(vararg tasks: String)
+#### `runGradleTasksOnAllVariants(vararg tasks: String)`
 
 This method defines a list of Gradle tasks that will be run against every single variation of every single dependency.
 So any gradle tasks defined here will be executed by default on every single variation of every dependency.
 
 These tasks are always executed first for each version variation.
 
-#### runGradleTasks(vararg tasks: String)
+#### `runGradleTasks(vararg tasks: String)`
 
 This method works similarly to `runGradleTasksOnAllVariants`, but it defines gradle tasks in which to be run against the
 most immediate scope surrounding the method. For example, invoking `runGradleTasks` directly inside the `dependency` 
@@ -126,18 +140,18 @@ lambda will run those tasks against every version for that dependency. However, 
 `version` lambda will only run those gradle tasks against that specific version. Similarly, using `runGradleTasks` 
 inside the `range` lambda will cause the specified tasks to be run against all versions in that range.
 
-#### dependency(module: String)
+#### `dependency(module: String)`
 
 This method defines a particular artifact whose versions you wish to vary. The lambda provided gives you access to 
 customization functions outlined below. 
 
-#### version(value: String)
+#### `version(value: String)`
 
 This method is always a child of the `dependency` lambda. It defines one specific version for the dependency to run 
 against. You can have any number of `version` invocations nested within a `dependency` block. It also provides a lambda 
 which allows you to specify gradle tasks for that specific version.
 
-#### range(start: String, end: String)
+#### `range(start: String, end: String)`
 
 This method is very similar to the `version` method, except that it specifies a range of versions rather than a single 
 version. You can have any number of `range` blocks inside your `dependency` block.
@@ -145,7 +159,7 @@ version. You can have any number of `range` blocks inside your `dependency` bloc
 Please note that the "end" of the range is exclusive! This means you can specify `range("1.0.0", "2.0.0")` and version
 2.0.0 will NOT be included. This allows you to easily specify versions up to but not including major releases, etc.
 
-#### exclude(regex: String)
+#### `exclude(regex: String)`
 
 This method is only available inside a `range` block, and any versions in that range whose value matches the provided 
 regex will be EXCLUDED from evaluation.
