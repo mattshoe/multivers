@@ -22,7 +22,9 @@ class DependencyVariant(
 
     fun range(start: String, end: String, configuration: VariantRange.() -> Unit = {}) {
         variantRanges.add(
-            VariantRange().apply(configuration)
+            VariantRange(
+                Range(start, end)
+            ).apply(configuration)
         )
     }
 

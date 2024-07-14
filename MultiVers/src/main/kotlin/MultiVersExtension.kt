@@ -2,13 +2,13 @@ package io.github.mattshoe.shoebox
 
 open class MultiVersExtension(
     internal var dependencyVariants: MutableList<DependencyVariant> = mutableListOf(),
-    internal var tasks: MutableList<String> = mutableListOf("build")
+    internal var tasks: MutableList<String> = mutableListOf()
 ) {
     fun dependency(
         module: String,
         configure: DependencyVariant.() -> Unit
     ) {
-        val (group, artifact) = module.split(":")
+        val (group, artifact) = module.trim().split(":")
         dependency(group, artifact, configure)
     }
 

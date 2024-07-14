@@ -1,9 +1,6 @@
-import io.github.mattshoe.shoebox.*
-import io.github.mattshoe.shoebox.Variant
-
 plugins {
     kotlin("jvm")
-    id("shoebox-multivers") version "1.0.0.12"
+    id("shoebox.multivers") version "1.0.0.90"
 }
 
 group = "io.github.mattshoe.shoebox"
@@ -15,21 +12,24 @@ repositories {
 }
 
 multivers {
-    runGradleTasksOnAllVariants("compile", "test")
+    runGradleTasksOnAllVariants("test")
 
-    variant("io.github.mattshoe.shoebox:ShoeBoxData") {
-        version("1.0.0")
-        version("1.5.3") {
-            runGradleTasks("build", "compile")
-        }
-        range("1.0.0", "2.0.0") {
-            exclude(".*-SNAPSHOT")
-            runGradleTasks("build", "test")
+    dependency("io.github.mattshoe.shoebox.autobuilder:AutoBuilder.Processor") {
+        runGradleTasks("sourceSets")
+        range("0.0.0", "2.0.0") {
+            exclude(".*-RC")
+            runGradleTasks("check")
         }
     }
-    variant("io.github.mattshoe.shoebox:AutoRepo") {
-        range("0.0.1", "1.0.0") {
-            exclude(".*-RC")
+
+    dependency("io.github.mattshoe:shoebox-data") {
+        runGradleTasks("validatePlugins")
+        version("0.0.3") {
+            runGradleTasks("assemble")
+        }
+        range("0.0.0", "0.0.3") {
+            exclude(".*-SNAPSHOT")
+            runGradleTasks("check")
         }
     }
 }
@@ -41,6 +41,7 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
 kotlin {
     jvmToolchain(19)
 }

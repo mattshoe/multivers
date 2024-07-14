@@ -5,29 +5,29 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import org.gradle.api.Project
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import java.io.File
+import java.net.URI
 
 class Resolver(
     private val project: Project
 ) {
     private val repositoryUrls by lazy { getRepositoryUrls(project) }
 
-    suspend fun allAvailableVersions(group: String, artifact: String): List<String> {
+    fun allAvailableVersions(group: String, artifact: String): List<String> {
         val versions = mutableListOf<String>()
         var pomFile: String? = null
 
-        withContext(Dispatchers.IO) {
-            repositoryUrls.forEach {
-                yield()
-                pomFile = downloadPomFile(it, group, artifact)
+        repositoryUrls.forEach {
+            pomFile = loadMetaDataFile(it, group, artifact)
 
-                if (pomFile != null)
-                    return@forEach
-            }
+            if (pomFile != null)
+                return@forEach
         }
 
         pomFile?.let {
@@ -39,18 +39,42 @@ class Resolver(
         return versions
     }
 
-    private suspend fun downloadPomFile(repoUrl: String, group: String, artifact: String): String? {
+    private fun isWebUrl(url: String): Boolean {
+        return try {
+            val uri = URI(url)
+            uri.scheme == "http" || uri.scheme == "https"
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    private fun loadMetaDataFile(repoUrl: String, group: String, artifact: String): String? {
+        return if (isWebUrl(repoUrl))
+            downloadMetaDataFileFromWeb(repoUrl, group, artifact)
+        else
+            downloadMetaDataFileLocal(repoUrl, group, artifact)
+    }
+
+    private fun downloadMetaDataFileFromWeb(repoUrl: String, group: String, artifact: String): String? {
         val groupPath = group.replace('.', '/')
-        val url = "$repoUrl/$groupPath/$artifact/maven-metadata.xml"
+
+        val url = buildString {
+            append(repoUrl.removeSuffix("/"))
+            append("/$groupPath")
+            append("/$artifact")
+            append("/maven-metadata.xml")
+        }
 
         return try {
-            val client = HttpClient(CIO)
-            val response: HttpResponse = client.get(url)
-            if (response.status.value == 200) {
-                response.bodyAsText()
-            } else {
-                println("Failed to download POM file from $url: ${response.status.value}")
-                null
+            runBlocking {
+                val client = HttpClient(CIO)
+                val response: HttpResponse = client.get(url)
+                if (response.status.value == 200) {
+                    response.bodyAsText()
+                } else {
+                    println("Failed to download POM file from $url: ${response.status.value}")
+                    null
+                }
             }
         } catch (e: Exception) {
             println("Failed to download POM file from $url: ${e.message}")
@@ -58,9 +82,33 @@ class Resolver(
         }
     }
 
-    private suspend fun parseVersionsFromMetadata(metadataXml: String): List<String> = withContext(Dispatchers.Default) {
+    private fun downloadMetaDataFileLocal(repoUrl: String, group: String, artifact: String): String? {
+        val groupPath = group.replace('.', '/')
+
+        val url = buildString {
+            append(repoUrl.removeSuffix("/"))
+            append("/$groupPath")
+            append("/$artifact")
+            append("/maven-metadata-local.xml")
+        }
+
+        return try {
+            val file = File(URI(url))
+            if (file.exists()) {
+                file.readText()
+            } else {
+                println("File not found at $url")
+                null
+            }
+        } catch (e: Throwable) {
+            println(e)
+            null
+        }
+    }
+
+    private fun parseVersionsFromMetadata(metadataXml: String): List<String> {
         val doc: Document = Jsoup.parse(metadataXml)
-        return@withContext doc.select("versioning > versions > version").map { it.text() }
+        return doc.select("versioning > versions > version").map { it.text() }
     }
 
     private fun getRepositoryUrls(project: Project): List<String> {
