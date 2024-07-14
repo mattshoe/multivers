@@ -5,12 +5,12 @@ import io.github.mattshoe.shoebox.util.EMPTY_STRING
 class DependencyVariant(
     var group: String = EMPTY_STRING,
     var artifact: String = EMPTY_STRING
-) {
+): VariantSpecifier {
     internal var tasks = mutableListOf<String>()
     internal var variantVersions = mutableListOf<VariantVersion>()
     internal var variantRanges = mutableListOf<VariantRange>()
 
-    fun runGradleTasks(vararg tasks: String) {
+    override fun runGradleTasks(vararg tasks: String) {
         this.tasks.addAll(tasks)
     }
 

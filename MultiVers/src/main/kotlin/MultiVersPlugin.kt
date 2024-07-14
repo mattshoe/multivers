@@ -58,6 +58,8 @@ class MultiVersPlugin : Plugin<Project> {
                         version.greaterThanEqualTo(rangeStart) && version.lessThan(rangeEnd)
                     }.forEach {
                         println("adding version: $it")
+                        variantAggregation.addVersionData(it, extension.tasks)
+                        variantAggregation.addVersionData(it, dependencyVariant.tasks)
                         variantAggregation.addVersionData(it, rangeData.tasks)
                     }
                 }

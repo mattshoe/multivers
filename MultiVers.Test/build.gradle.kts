@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm")
-    id("shoebox.multivers") version "1.0.0.90"
+    id("shoebox.multivers") version "1.0.0.92"
 }
 
 group = "io.github.mattshoe.shoebox"
@@ -15,7 +15,7 @@ multivers {
     runGradleTasksOnAllVariants("test")
 
     dependency("io.github.mattshoe.shoebox.autobuilder:AutoBuilder.Processor") {
-        runGradleTasks("sourceSets")
+        runGradleTasks("assemble")
         range("0.0.0", "2.0.0") {
             exclude(".*-RC")
             runGradleTasks("check")
@@ -23,11 +23,10 @@ multivers {
     }
 
     dependency("io.github.mattshoe:shoebox-data") {
-        runGradleTasks("validatePlugins")
         version("0.0.3") {
             runGradleTasks("assemble")
         }
-        range("0.0.0", "0.0.3") {
+        range("0.0.0", "1.0.0") {
             exclude(".*-SNAPSHOT")
             runGradleTasks("check")
         }
