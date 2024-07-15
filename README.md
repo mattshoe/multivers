@@ -35,7 +35,7 @@ libraries.
 3. **KSP Plugin with No Direct Dependency**: For a Kotlin Symbol Processing (KSP) plugin that generates code for libraries like Kotlin Coroutines, you can ensure compatibility with a range of coroutine library versions.
 4. **Comprehensive CI/CD**: Integrate with CI/CD pipelines to automatically validate multiple dependency versions, ensuring robust software delivery.
 
-## Getting Started
+## Quick Start
 
 ### Add the Plugin
 
@@ -92,7 +92,7 @@ There are several ways you could choose to run MultiVers validations:
    - `./gradlew multiversIoSomeGroupSomeArtifact_v3810`
 
 
-## Syntax
+## How it works
 
 Configure the plugin using the `multivers` block in your `build.gradle.kts` file:
 
