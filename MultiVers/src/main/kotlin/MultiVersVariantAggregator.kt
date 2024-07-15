@@ -36,18 +36,32 @@ class MultiVersVariantAggregator {
             dependencyVariant.variantRanges.forEach { rangeData ->
                 val rangeStart = ComparableVersion(rangeData.range.start)
                 val rangeEnd = ComparableVersion(rangeData.range.end)
+                val exclusions = rangeData.exclusions.map { Regex(it) }
 
-                allVersions.filter {
-                    val version = ComparableVersion(it)
-                    version.greaterThanEqualTo(rangeStart) && version.lessThan(rangeEnd)
-                }.forEach {
-                    variantAggregation.addVersionData(it, extension.tasks)
-                    variantAggregation.addVersionData(it, dependencyVariant.tasks)
-                    variantAggregation.addVersionData(it, rangeData.tasks)
-                }
+                allVersions
+                    .filter {
+                        it.isEligibleForValidation(rangeStart, rangeEnd, exclusions)
+                    }.forEach {
+                        variantAggregation.addVersionData(it, extension.tasks)
+                        variantAggregation.addVersionData(it, dependencyVariant.tasks)
+                        variantAggregation.addVersionData(it, rangeData.tasks)
+                    }
             }
         }
 
         return variantAggregations
+    }
+
+    private fun String.isEligibleForValidation(
+        rangeStart: ComparableVersion,
+        rangeEnd: ComparableVersion,
+        exclusions: List<Regex>
+    ): Boolean {
+        val version = ComparableVersion(this)
+        return version.greaterThanEqualTo(rangeStart)
+                && version.lessThan(rangeEnd)
+                && exclusions.none { regex ->
+                    this.matches(regex)
+                }
     }
 }

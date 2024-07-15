@@ -1,6 +1,6 @@
 plugins {
     kotlin("jvm")
-    id("shoebox.multivers") version "1.0.0.108"
+    id("shoebox.multivers") version "1.0.0.109"
 }
 
 group = "io.github.mattshoe.shoebox"
@@ -17,7 +17,8 @@ multivers {
     dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC") {
         runGradleTasks("assemble")
         range("1.0.0", "2.0.0") {
-            exclude(".*-RC")
+            exclude(".*-RC.*")
+            exclude(".*Beta")
             runGradleTasks("check")
         }
     }
