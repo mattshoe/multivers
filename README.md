@@ -1,20 +1,20 @@
 # MultiVers Gradle Plugin
 
-The MultiVers Gradle plugin is designed to simplify the process of testing your project's compatibility with multiple 
-versions of its dependencies. By automating the execution of tasks across various dependency versions and ranges, 
+The MultiVers Gradle plugin is designed to allow you to test your project's compatibility with a range of 
+versions of its dependencies. By automating compatibility checks across various dependency ranges, 
 MultiVers helps ensure that your project remains robust and adaptable to changes in its dependency ecosystem. 
 This is especially valuable for maintaining stability and compatibility in projects that rely on evolving third-party 
 libraries.
 
 ## Key Features
 
-1. **Automated Multi-Version Testing**:
-    - Run specified Gradle tasks across multiple versions of your dependencies automatically.
+1. **Automate Multi-Version Testing**:
+    - Run specified Gradle tasks across any range of versions for any number of dependencies automatically.
     - Ensures comprehensive validation by covering all specified versions, helping identify compatibility issues early.
 
-2. **Flexible Version Specification**:
+2. **Flexible DSL**:
     - Define both specific versions and version ranges for your dependencies.
-    - The end of a version range is exclusive, allowing you to easily specify ranges up to a breaking release without including the breaking change.
+    - The end of a version range is exclusive, which allowing you to easily specify ranges up to a breaking release without including the breaking change.
 
 3. **Task Customization for Versions**:
     - Configure different tasks for different versions or ranges, providing granular control over your testing process.
