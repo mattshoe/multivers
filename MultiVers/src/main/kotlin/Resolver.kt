@@ -14,16 +14,17 @@ import org.jsoup.nodes.Document
 import java.io.File
 import java.net.URI
 
-class Resolver(
-    private val project: Project
-) {
-    private val repositoryUrls by lazy { getRepositoryUrls(project) }
+class Resolver {
 
-    fun allAvailableVersions(group: String, artifact: String): List<String> {
+    fun allAvailableVersions(
+        project: Project,
+        group: String,
+        artifact: String
+    ): List<String> {
         val versions = mutableListOf<String>()
         var pomFile: String? = null
 
-        repositoryUrls.forEach {
+        getRepositoryUrls(project).forEach {
             pomFile = loadMetaDataFile(it, group, artifact)
 
             if (pomFile != null)

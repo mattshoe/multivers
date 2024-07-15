@@ -4,6 +4,8 @@ open class MultiVersExtension(
     internal var dependencyVariants: MutableList<DependencyVariant> = mutableListOf(),
     internal var tasks: MutableList<String> = mutableListOf()
 ) {
+    var windows = false
+
     fun dependency(
         module: String,
         configure: DependencyVariant.() -> Unit
