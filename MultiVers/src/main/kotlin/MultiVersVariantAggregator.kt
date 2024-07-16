@@ -63,14 +63,8 @@ class MultiVersVariantAggregator {
             val excludedVersions = variantAggregation.versions.get()
                 .keys
                 .filter { version ->
-                    val isExcluded = dependencyVariant.variantExclusions.any { exclusion ->
-                        exclusion.patterns.any { regex ->
-                            version.matches(regex).also {
-                                if (it) {
-                                    log("Excluding $version based on ${regex.pattern}")
-                                }
-                            }
-                        }
+                    val isExcluded = dependencyVariant.variantExclusions.any { regex ->
+                        version.matches(regex)
                     }
                     if (isExcluded)
                         log("Version $version excluded!")

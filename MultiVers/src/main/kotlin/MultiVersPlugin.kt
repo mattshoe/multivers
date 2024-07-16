@@ -10,7 +10,7 @@ class MultiVersPlugin : Plugin<Project> {
         const val GRADLE_GROUP = "MultiVers"
     }
 
-    private val aggregator = MultiVersVariantAggregator()
+    private val variantAggregator = MultiVersVariantAggregator()
     private val variantProcessor = VersionVariantProcessor()
     private val dependencyInspector = DependencyInspector()
 
@@ -18,19 +18,18 @@ class MultiVersPlugin : Plugin<Project> {
         val extension = project.extensions.create<MultiVersExtension>("multivers")
 
         project.afterEvaluate {
+            val aggregatedVersionData = variantAggregator.aggregateVersionVariants(
+                project,
+                extension,
+                dependencyInspector
+            )
+
             variantProcessor.processVariants(
                 project,
-                aggregator.aggregateVersionVariants(
-                    project,
-                    extension,
-                    dependencyInspector
-                )
+                aggregatedVersionData
             )
         }
     }
-
-
-
 }
 
 

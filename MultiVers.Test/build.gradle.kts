@@ -2,7 +2,7 @@ import org.gradle.toolchains.foojay.match
 
 plugins {
     kotlin("jvm")
-    id("shoebox.multivers") version "1.0.0.122"
+    id("shoebox.multivers") version "1.0.0.124"
 }
 
 group = "io.github.mattshoe.shoebox"
