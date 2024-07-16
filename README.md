@@ -6,7 +6,7 @@ MultiVers helps ensure that your project remains robust and adaptable to changes
 This is especially valuable for maintaining stability and compatibility in projects that rely on evolving third-party 
 libraries.
 
-## Key Features
+## Features
 
 1. **Automate Multi-Version Testing**:
     - Run specified Gradle tasks across any range of versions for any number of dependencies automatically.
@@ -28,8 +28,8 @@ libraries.
 
 1. **Backward Compatibility Testing**: Ensure your project works with older versions of dependencies, preventing issues when users have not upgraded to the latest versions.
 2. **Future-proofing**: Test compatibility with future or newer versions of dependencies to catch potential issues early.
-3. **KSP Plugin with No Direct Dependency**: For a Kotlin Symbol Processing (KSP) plugin that generates code for libraries like Kotlin Coroutines, you can ensure compatibility with a range of coroutine library versions.
 4. **Comprehensive CI/CD**: Integrate with CI/CD pipelines to automatically validate multiple dependency versions, ensuring robust software delivery.
+3. **KSP Plugin**: Some Kotlin Symbol Processing (KSP) plugins may generate code for libraries like Kotlin Coroutines or Room, but not have a direct dependency themselves. This will allow you to ensure compatibility with a range of library versions.
 
 ## Quick Start
 
