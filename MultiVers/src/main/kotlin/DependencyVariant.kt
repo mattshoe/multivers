@@ -91,5 +91,4 @@ class DependencyVariant(
             ).apply(configuration)
         )
     }
-
 }

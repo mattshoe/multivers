@@ -1,8 +1,5 @@
 package io.github.mattshoe.shoebox
 
-/**
- * Test the kdoc
- */
 open class MultiVersExtension(
     internal var dependencyVariants: MutableList<DependencyVariant> = mutableListOf(),
     internal var tasks: MutableList<String> = mutableListOf()

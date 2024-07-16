@@ -24,10 +24,6 @@ libraries.
     - Use regex patterns to exclude specific versions from a range.
     - Helpful for skipping unstable versions, such as release candidates (RC) or snapshots.
 
-5. **Centralized Task Execution**:
-    - Specify tasks to run on all versions and ranges of dependencies, ensuring consistent testing across all configurations.
-    - Simplifies the setup by reducing the need for repetitive task definitions.
-
 ## Use Cases
 
 1. **Backward Compatibility Testing**: Ensure your project works with older versions of dependencies, preventing issues when users have not upgraded to the latest versions.
@@ -54,6 +50,13 @@ multivers {
     
     dependency("io.some.group:SomeArtifact") {
         range("3.2.0", "4.0.0")
+    }
+
+    dependency("derp.foo.bar:DerpFoo") {
+        match("^1\\..*") {
+            runGradleTasks("lint")
+        }
+        exclude(".*[a-zA-z].*")
     }
 
     dependency("com.foo.bar:DerpDerp") {
@@ -111,6 +114,13 @@ multivers {
         }
     }
 
+    dependency("derp.foo.bar:DerpFoo") {
+        match("^1\\..*") { // Match any version that starts with "1."
+            runGradleTasks("lint")
+        }
+        exclude(".*[a-zA-z].*") // exclude all unstable versions (alpha, beta, RC, etc)
+    }
+
     dependency("com.flerp.meep:Yeet") {
         version("0.0.3") {
             runGradleTasks("assemble") // run ./gradlew assemble against version "0.0.3" only
@@ -145,12 +155,6 @@ inside the `range` lambda will cause the specified tasks to be run against all v
 This method defines a particular artifact whose versions you wish to vary. The lambda provided gives you access to 
 customization functions outlined below. 
 
-#### `version(value: String)`
-
-This method is always a child of the `dependency` lambda. It defines one specific version for the dependency to run 
-against. You can have any number of `version` invocations nested within a `dependency` block. It also provides a lambda 
-which allows you to specify gradle tasks for that specific version.
-
 #### `range(start: String, end: String)`
 
 This method is very similar to the `version` method, except that it specifies a range of versions rather than a single 
@@ -159,7 +163,28 @@ version. You can have any number of `range` blocks inside your `dependency` bloc
 Please note that the "end" of the range is exclusive! This means you can specify `range("1.0.0", "2.0.0")` and version
 2.0.0 will NOT be included. This allows you to easily specify versions up to but not including major releases, etc.
 
+#### `match(vararg regex: String)`
+The given regular expressions will be evaluated against every available version in the dependency's Maven repository. 
+If the regular expression matches the version string, then it will be included in the MultiVers evaluation.
+
+#### `version(value: String)`
+
+This method is always a child of the `dependency` lambda. It defines one specific version for the dependency to run
+against. You can have any number of `version` invocations nested within a `dependency` block. It also provides a lambda
+which allows you to specify gradle tasks for that specific version.
+
 #### `exclude(regex: String)`
 
-This method is only available inside a `range` block, and any versions in that range whose value matches the provided 
-regex will be EXCLUDED from evaluation.
+This method is available in 2 places:
+1. Inside a `range` block, any versions in that range whose value matches the provided regex will be excluded from evaluation.
+2. As a direct child of the `dependency` block, this will be a FINAL exclusion, meaning no matter whether the versions matching the exclusion pattern are matched elsewhere, they will ALWAYS be excluded from the final result.
+
+
+## Contributing
+Contributions are welcome! Please read the CONTRIBUTING.md for guidelines on how to contribute to this project.
+
+### License
+This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
+
+### Contact
+For any inquiries or issues, please open an issue on GitHub or contact the project maintainer.
