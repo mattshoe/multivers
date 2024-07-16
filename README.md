@@ -46,7 +46,7 @@ plugins {
 ### Configure your variants
 ```kotlin
 multivers {
-    runGradleTasksOnAllVariants("testDebugUnitTestCoverage", "check")
+    runGradleTasksOnAllVariants("test", "lint")
     
     dependency("io.some.group:SomeArtifact") {
         range("3.2.0", "4.0.0")
@@ -54,7 +54,7 @@ multivers {
 
     dependency("derp.foo.bar:DerpFoo") {
         match("^1\\..*") {
-            runGradleTasks("lint")
+            runGradleTasks("check")
         }
         exclude(".*[a-zA-z].*")
     }
@@ -76,7 +76,7 @@ multivers {
         }
         range("1.0.0", "2.0.0") {
             exclude(".*-SNAPSHOT")
-            runGradleTasks("check")
+            runGradleTasks("yourGradleTask")
         }
     }
 }
