@@ -88,9 +88,9 @@ There are several ways you could choose to run MultiVers validations:
 
 1. Run validations for all version variations at once. The command below will run all dependency/version combinations and their associated tasks:
    - `./gradlew multivers`
-2. Run validations for a specific dependency. Take a look at the `"io.some.group:SomeArtifact"` dependency above:
+2. Run validations for a specific dependency. Take a look at the `"io.some.group:SomeArtifact"` dependency above for example. This would be the generated task:
    - `./gradlew multiversIoSomeGroupSomeArtifact`
-   - Note that any dashes and underscores in the GAV are removed.
+   - Note that any dashes and underscores in the GAV are removed and TitleCase is used.
 3. Run validations for a specific dependency version. Imagine we want to run validations for `"io.some.group:SomeArtifact:3.8.10"`:
    - `./gradlew multiversIoSomeGroupSomeArtifact_v3810`
 
