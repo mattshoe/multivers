@@ -3,8 +3,8 @@ package io.github.mattshoe.shoebox
 import io.github.mattshoe.shoebox.util.EMPTY_STRING
 
 class DependencyVariant(
-    var group: String = EMPTY_STRING,
-    var artifact: String = EMPTY_STRING
+    internal var group: String = EMPTY_STRING,
+    internal var artifact: String = EMPTY_STRING
 ): VariantSpecifier {
     internal var tasks = mutableListOf<String>()
     internal var variantVersions = mutableListOf<VariantVersion>()
@@ -34,7 +34,7 @@ class DependencyVariant(
         )
     }
 
-    fun range(start: String, end: String, configuration: VariantRange.() -> Unit = {}) {
+    fun range(start: String, end: String, configuration:  VariantRange.() -> Unit = {}) {
         variantRanges.add(
             VariantRange(
                 Range(start, end)

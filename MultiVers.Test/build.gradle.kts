@@ -17,8 +17,12 @@ multivers {
     runGradleTasksOnAllVariants("test")
 
     dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC") {
-        match(".*") 
+        match(".*")
         exclude(".*[a-zA-z].*")
+
+        range("0", "") {
+            exclude()
+        }
     }
 }
 
