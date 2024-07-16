@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.github.mattshoe.shoebox"
-version = "1.0.0.114"
+version = "1.0.0.122"
 
 repositories {
     mavenLocal()

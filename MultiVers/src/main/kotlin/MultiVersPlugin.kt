@@ -12,7 +12,7 @@ class MultiVersPlugin : Plugin<Project> {
 
     private val aggregator = MultiVersVariantAggregator()
     private val variantProcessor = VersionVariantProcessor()
-    private val resolver = Resolver()
+    private val dependencyInspector = DependencyInspector()
 
     override fun apply(project: Project) {
         val extension = project.extensions.create<MultiVersExtension>("multivers")
@@ -23,7 +23,7 @@ class MultiVersPlugin : Plugin<Project> {
                 aggregator.aggregateVersionVariants(
                     project,
                     extension,
-                    resolver
+                    dependencyInspector
                 )
             )
         }

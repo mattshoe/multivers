@@ -2,7 +2,7 @@ import org.gradle.toolchains.foojay.match
 
 plugins {
     kotlin("jvm")
-    id("shoebox.multivers") version "1.0.0.114"
+    id("shoebox.multivers") version "1.0.0.122"
 }
 
 group = "io.github.mattshoe.shoebox"
@@ -17,9 +17,8 @@ multivers {
     runGradleTasksOnAllVariants("test")
 
     dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC") {
-        runGradleTasks("assemble")
-        match(".*")
-        exclude(".*[A-Z].*")
+        match(".*") 
+        exclude(".*[a-zA-z].*")
     }
 }
 

@@ -23,7 +23,7 @@ class VersionVariantProcessor {
         val variantTasks = mutableSetOf<Task>()
 
         variantAggregations.forEach { variant ->
-            val topLevelVersionTasks = buildVersionSpecificTasks(project, variant, taskBuilder)
+            val topLevelVersionTasks = buildVersionSpecificTasks(project, variant)
             variantTasks.add(
                 // Build this variant's top-level tasks
                 taskBuilder.task(
@@ -41,8 +41,7 @@ class VersionVariantProcessor {
 
     private fun buildVersionSpecificTasks(
         project: Project,
-        variant: VariantAggregation,
-        taskBuilder: MultiversTaskBuilder
+        variant: VariantAggregation
     ): List<Task> {
         return variant.versions.get().map { (version, versionSpecificTasks) ->
             requiredFirstTasks.forEach {

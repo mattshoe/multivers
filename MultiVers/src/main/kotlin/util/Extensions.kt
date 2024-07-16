@@ -13,6 +13,10 @@ import kotlin.coroutines.CoroutineContext
 
 const val EMPTY_STRING = ""
 
+fun log(it: Any) {
+    print("\n\tMULTIVERS::\t$it")
+}
+
 fun ComparableVersion.greaterThanEqualTo(other: ComparableVersion): Boolean {
     return compareTo(other) >= 0
 }

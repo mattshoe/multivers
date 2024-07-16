@@ -2,23 +2,21 @@ package io.github.mattshoe.shoebox
 
 import io.github.mattshoe.shoebox.util.greaterThanEqualTo
 import io.github.mattshoe.shoebox.util.lessThan
+import io.github.mattshoe.shoebox.util.log
 import org.apache.maven.artifact.versioning.ComparableVersion
 import org.gradle.api.Project
 
 class MultiVersVariantAggregator {
+
     fun aggregateVersionVariants(
         project: Project,
         extension: MultiVersExtension,
-        resolver: Resolver
+        dependencyInspector: DependencyInspector
     ): List<VariantAggregation> {
         val variantAggregations = mutableListOf<VariantAggregation>()
 
         extension.dependencyVariants.forEach { dependencyVariant ->
-            val allVersions = resolver.allAvailableVersions(
-                project,
-                dependencyVariant.group,
-                dependencyVariant.artifact
-            )
+            log("Aggregating Dependency -- ${dependencyVariant.group}:${dependencyVariant.artifact}")
             val variantAggregation = VariantAggregation(
                 dependencyVariant.group,
                 dependencyVariant.artifact
@@ -26,10 +24,16 @@ class MultiVersVariantAggregator {
                 variantAggregations.add(it)
             }
 
-            allVersions.forEach { version ->
+            dependencyInspector.allAvailableVersions(
+                project,
+                dependencyVariant.group,
+                dependencyVariant.artifact
+            ).forEach { version ->
+                log("\tAggregating Version -- $version")
                 dependencyVariant.variantMatchers.forEach { matcher ->
-                    matcher.patterns.forEach { pattern ->
-                        if (version.matches(pattern)) {
+                    matcher.patterns.forEach { regex ->
+                        if (version.matches(regex)) {
+                            log("\tMatcher succeeded: ${regex.pattern}")
                             variantAggregation.addVersionData(version, matcher.tasks)
                         }
                     }
@@ -41,6 +45,7 @@ class MultiVersVariantAggregator {
                     val exclusions = rangeData.exclusions.map { Regex(it) }
 
                     if (version.isEligibleForValidation(rangeStart, rangeEnd, exclusions)) {
+                        log("Range Matched: $version")
                         variantAggregation.addVersionData(version, extension.tasks)
                         variantAggregation.addVersionData(version, dependencyVariant.tasks)
                         variantAggregation.addVersionData(version, rangeData.tasks)
@@ -49,6 +54,7 @@ class MultiVersVariantAggregator {
             }
 
             dependencyVariant.variantVersions.forEach {
+                log("Specific version added: $it")
                 variantAggregation.addVersionData(it.version, extension.tasks)
                 variantAggregation.addVersionData(it.version, dependencyVariant.tasks)
                 variantAggregation.addVersionData(it.version, it.tasks)
@@ -58,31 +64,29 @@ class MultiVersVariantAggregator {
                 .keys
                 .filter { version ->
                     val isExcluded = dependencyVariant.variantExclusions.any { exclusion ->
-                        exclusion.patterns.any { pattern ->
-                            version.matches(pattern)
+                        exclusion.patterns.any { regex ->
+                            version.matches(regex).also {
+                                if (it) {
+                                    log("Excluding $version based on ${regex.pattern}")
+                                }
+                            }
                         }
                     }
-                    !isExcluded
+                    if (isExcluded)
+                        log("Version $version excluded!")
+
+                    isExcluded
                 }
+
+            excludedVersions.forEach {
+                log("Excluded version: $it")
+            }
 
             variantAggregation.mutateVersions {
                 excludedVersions.forEach {
                     remove(it)
                 }
             }
-
-//            variantAggregation.mutateVersions {
-//                keys.forEach { version ->
-//                    val isExcluded = dependencyVariant.variantExclusions.any { exclusion ->
-//                        exclusion.patterns.any { pattern ->
-//                            version.matches(pattern)
-//                        }
-//                    }
-//                    if (isExcluded) {
-//                        remove(version)
-//                    }
-//                }
-//            }
         }
 
         return variantAggregations

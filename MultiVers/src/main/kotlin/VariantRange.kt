@@ -26,9 +26,4 @@ class VariantMatcher(
 
 class VariantExclusion(
     internal val patterns: List<Regex>
-): VariantSpecifier {
-    internal val tasks = mutableListOf<String>()
-    override fun runGradleTasks(vararg tasks: String) {
-        this.tasks.addAll(tasks)
-    }
-}
+)
