@@ -181,7 +181,7 @@ This method is available in 2 places:
 
 
 ## Contributing
-Contributions are welcome! Please read the CONTRIBUTING.md for guidelines on how to contribute to this project.
+Contributions are welcome! Please read the [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute to this project.
 
 ### License
 This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
