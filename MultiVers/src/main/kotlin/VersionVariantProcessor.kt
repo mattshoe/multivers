@@ -4,8 +4,7 @@ import io.github.mattshoe.shoebox.util.multiversTask
 import io.github.mattshoe.shoebox.util.runGradleCommand
 import org.gradle.api.Project
 import org.gradle.api.Task
-import java.time.temporal.ChronoUnit
-import kotlin.time.Duration
+import org.gradle.api.tasks.SourceSetContainer
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -44,31 +43,39 @@ class VersionVariantProcessor {
         variant: VariantAggregation
     ): List<Task> {
         return variant.versions.get().map { (version, versionSpecificTasks) ->
+            val versionTaskName = "${variant.name}_v${variant.sanitizeString(version)}"
+            val configurationName = "${versionTaskName}Implementation"
             requiredFirstTasks.forEach {
                 if (versionSpecificTasks.firstOrNull() == it)
                     versionSpecificTasks.removeFirst()
             }
 
-            project.tasks.multiversTask("${variant.name}_v${variant.sanitizeString(version)}") {
+            project.tasks.multiversTask(versionTaskName) {
                 var startTime: Long = 0L
+
                 doFirst {
                     startTime = System.nanoTime()
-                    project.configurations.forEach { configuration ->
-                        configuration.incoming.beforeResolve {
-                            configuration.resolutionStrategy.force(variant.gav(version))
+                    val sourceSets = project.extensions.getByName("sourceSets") as SourceSetContainer
+                    val mainSourceSet = sourceSets.getByName("main").output.classesDirs
+
+                    project.configurations.create(configurationName) {
+                        isCanBeConsumed = false
+                        isCanBeResolved = true
+                        extendsFrom(
+                            project.configurations.getByName("implementation"),
+                            project.configurations.getByName("compileOnly"),
+                            project.configurations.getByName("api")
+                        )
+                    }
+
+                    project.dependencies.constraints.add(configurationName, variant.module) {
+                        version {
+                            strictly(version)
                         }
                     }
                 }
-                doLast {
-                    project.rootProject.layout.buildDirectory.file("caches/modules-2").let {
-                        println("Deleting: ${it.get().asFile.path}")
-                        project.delete(it)
-                    }
-                    project.rootProject.layout.buildDirectory.file("caches/transforms-2").let {
-                        println("Deleting: ${it.get().asFile.path}")
-                        project.delete(it)
-                    }
 
+                doLast {
                     project.runGradleCommand("clean")
                     project.runGradleCommand("build", "--refresh-dependencies")
 
@@ -81,7 +88,7 @@ class VersionVariantProcessor {
                         }
 
                     val duration = (System.nanoTime() - startTime).toDuration(DurationUnit.NANOSECONDS)
-                    println("Task $name completed in ${duration}")
+                    println("Task $name completed in $duration")
                 }
             }
         }

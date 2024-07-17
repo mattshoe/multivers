@@ -8,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import org.apache.maven.artifact.versioning.ComparableVersion
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.TaskContainer
 import kotlin.coroutines.CoroutineContext
 
@@ -26,8 +27,10 @@ fun ComparableVersion.lessThan(other: ComparableVersion): Boolean {
 }
 
 fun TaskContainer.multiversTask(name: String = "", action: Task.() -> Unit): Task {
-
-    return register("multivers${name.trim().replaceFirstChar { it.titlecaseChar() }}") {
+    return register(
+        "multivers${name.trim().replaceFirstChar { it.titlecaseChar() }}",
+//        JavaExec::class.java
+    ) {
         group = GRADLE_GROUP
         action()
     }.get()

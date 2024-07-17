@@ -2,7 +2,7 @@ import org.gradle.toolchains.foojay.match
 
 plugins {
     kotlin("jvm")
-    id("shoebox.multivers") version "1.0.0.124"
+    id("shoebox.multivers") version "1.0.0.130"
 }
 
 group = "io.github.mattshoe.shoebox"
@@ -16,33 +16,9 @@ repositories {
 multivers {
     runGradleTasksOnAllVariants("test")
 
-    dependency("com.foo.bar") {
-        range("1.0.0", "2.0.0")
-    }
-
-    dependency("io.derp.flerp:FlerpDerp") {
-        match("^1\\..*") {
-            runGradleTasks("detekt")
-        }
+    dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC") {
+        match(".*")
         exclude(".*[a-zA-z].*")
-    }
-
-    dependency("some.dep.foo:SomeDep") {
-        version("1.2.3")
-    }
-
-    dependency("another.foo:AnotherDep") {
-        version("4.2.3") {
-            runGradleTasks("lint")
-        }
-        range("3.1.2", "4.0.0") {
-            exclude("3\\.2.*")
-            runGradleTasks("check", "compile")
-        }
-    }
-
-    dependency("com.this.is.dep:TheDep") {
-        version("")
     }
 }
 
